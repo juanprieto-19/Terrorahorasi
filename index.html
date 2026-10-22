@@ -29,6 +29,7 @@ body { margin: 0; background: var(--night); color: var(--ink); font-family: var(
   opacity: 0; visibility: hidden; transition: opacity 1.2s ease, visibility 1.2s;
 }
 .scene.on { opacity: 1; visibility: visible; }
+.bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(13,16,24,.82), rgba(13,16,24,.4)); }
 .bg { position: absolute; inset: 0; z-index: -1; background-size: cover; background-position: center; opacity: .55; }
 h1, h2 { font-family: var(--f-display); font-weight: 400; margin: 0; text-wrap: balance; letter-spacing: .03em; }
 h1 { font-size: clamp(2.8rem, 12vw, 5.4rem); color: var(--moon); line-height: .95; transform: rotate(-2deg); text-shadow: 3px 3px 0 #000, 0 0 30px rgba(141,162,184,.5); }
@@ -240,58 +241,100 @@ p { margin: 0; max-width: 34em; }
    Todo el contenido está en este bloque. También puedes editarlo desde el botón "Editar"
    de la página (EDITOR = true); lo que cambies ahí se guarda en tu navegador.
    Antes de enviárselo, pon EDITOR = false para que el botón no aparezca. */
-const EDITOR = true;
+const EDITOR = false;
 
 const CONFIG = {
-  ella: "mi amor",                 // cómo le dices cariñosamente
-  yo: "Tu nombre o apodo",         // cómo firmas
-  fecha: "24 de octubre",          // fecha del mes
-  portada: {
-    kicker: "Feliz mes",
-    titulo: "Entre sombras y estrellas",
-    subtitulo: "Hay un mundo escondido detrás de esta puerta. Es solo nuestro."
+  "ella": "Mi reina",
+  "yo": "Tu amor",
+  "fecha": "24 de octubre",
+  "portada": {
+    "kicker": "Feliz mes",
+    "titulo": "Entre sombras y estrellas",
+    "subtitulo": "Hay un mundo escondido detrás de esta puerta. Es solo nuestro."
   },
-  carta: [
+  "carta": [
     "Dicen que en Halloween Town nadie sabe lo que es el amor, hasta que alguien lo encuentra por accidente. A mí me pasó contigo.",
     "Yo era un habitante más de la oscuridad, contento con mis sustos y mis calabazas, hasta que llegaste y encendiste algo que no sabía que me faltaba.",
     "Contigo cada día es una noche de Halloween: llena de sorpresas, de risas que asustan a los fantasmas y de rincones que solo nosotros conocemos.",
-    "Escribe aquí lo que solo tú puedes decirle: cómo la conociste, qué te hace reír de ella, qué lugar ocupa en tu mundo.",
+    "No somos una fantasia perfecta o un cuento de hadas donde somos la princesa y el principe, estamos llenos de errores, complicaciones y terrores un tanto curiosos, sin embargo no busco en ti la perfección, solo la belleza de la imperfección que hay en nosotros.",
     "No necesito una Navidad robada ni un reino de huesos. Me basta tu mano en la mía, bajo esta luna de espirales.",
-    "Feliz mes. Gracias por quedarte en mi pueblo."
+    "Gracias por quedarte en mi pueblo."
   ],
-  // Cada recuerdo es una lápida. "img" acepta la ruta de una imagen junto al archivo (img/foto1.jpg)
-  // o puedes subirla desde el editor.
-  recuerdos: [
-    { fecha: "Primer encuentro", titulo: "El día que te vi", texto: "Cuéntale aquí cómo fue ese primer momento.", img: "" },
-    { fecha: "Primera cita", titulo: "Nuestra primera noche", texto: "Un detalle que solo ustedes dos recuerdan.", img: "" },
-    { fecha: "Un viaje", titulo: "Ese lugar", texto: "Un recuerdo que les hizo reír hasta llorar.", img: "" },
-    { fecha: "Una broma", titulo: "Nuestro chiste", texto: "Algo que solo ustedes entienden.", img: "" },
-    { fecha: "Hoy", titulo: "Todo lo que somos", texto: "Lo que sientes hoy por ella.", img: "" }
+  "recuerdos": [
+    {
+      "fecha": "La primera llama",
+      "titulo": "La verdad puesta en papel",
+      "texto": "Fue curioso que todo nuestro amor se haya dado por una mentira que se expuso hace ya bastante tiempo, de una verdad que se escribio en papel y solto el misterio que habia bajo la mascara conocida como FER",
+      "img": "img/recuerdo1-mascara.jpg"
+    },
+    {
+      "fecha": "Primera partida",
+      "titulo": "Nuestro primer juego",
+      "texto": "es curioso que hayamos empezado a llevarnos mejor, por medio de los juegos, me alegra en muchos sentidos puesto que es lo que mas hago y a lo que mas me dedico, congeniar en ello contigo fue algo que me alegro",
+      "img": "img/recuerdo2-juego.jpg"
+    },
+    {
+      "fecha": "Un viaje",
+      "titulo": "Ese lugar",
+      "texto": "Aun no se a donde llegue, aun no se a que lugar vaya, pero se que quiero que estes ahi, quiero que este viaje sea junto a ti, un viaje en el que podamos crecer y avanzar juntos.",
+      "img": "img/recuerdo3-viaje.jpg"
+    },
+    {
+      "fecha": "Una broma",
+      "titulo": "Nuestro chiste",
+      "texto": "Nuestra forma de bromear y molestarnos, algo que nos gusta pero muchas veces nos puede llegar a molestar, sin embargo considero que es algo que nos caracteriza y nos llena de personalidad",
+      "img": "img/recuerdo4-risa.jpg"
+    },
+    {
+      "fecha": "Hoy",
+      "titulo": "Todo lo que somos",
+      "texto": "Hoy seguimos juntos, a pesar de todas las dificultades, seguimos juntos y quiero que siga asi hasta que estemos bajo tierra, inclusive en el mas alla, espero poder seguir estando a tu lado",
+      "img": "img/recuerdo5-hoy.jpg"
+    }
   ],
-  secretos: {
-    skull:   { titulo: "La calavera", texto: "Hasta la eternidad, contigo." },
-    flower:  { titulo: "La flor azul", texto: "Me recuerdas a algo que nunca se marchita." },
-    pumpkin: { titulo: "La calabaza", texto: "Contigo hasta el otoño más frío se siente cálido." }
+  "secretos": {
+    "skull": {
+      "titulo": "La calavera",
+      "texto": "Hasta la eternidad, contigo."
+    },
+    "flower": {
+      "titulo": "La flor azul",
+      "texto": "Me recuerdas a algo que nunca se marchita."
+    },
+    "pumpkin": {
+      "titulo": "La calabaza",
+      "texto": "Contigo hasta el otoño más frío se siente cálido."
+    }
   },
-  // El voto: tres velas, tres frases. Inspirado en la ceremonia de El cadáver de la novia,
-  // escrito con palabras propias. Cámbialo por el tuyo.
-  voto: {
-    titulo: "Con esta mano…",
-    velas: [
-      { nombre: "La mano", linea: "Con esta mano, levantaré tus penas y sostendré tus alegrías." },
-      { nombre: "La vela", linea: "Con esta vela, encenderé tu camino cuando todo esté oscuro." },
-      { nombre: "El anillo", linea: "Con este anillo, te pido que camines a mi lado." }
+  "voto": {
+    "titulo": "Con esta mano…",
+    "velas": [
+      {
+        "nombre": "La mano",
+        "linea": "Con esta mano, levantaré tus penas y sostendré tus alegrías."
+      },
+      {
+        "nombre": "La vela",
+        "linea": "Con esta vela, encenderé tu camino cuando todo esté oscuro."
+      },
+      {
+        "nombre": "El anillo",
+        "linea": "Con este anillo, te pido que te cases conmigo"
+      }
     ]
   },
-  final: {
-    titulo: "Te amo",
-    texto: "Esta es tu sorpresa final.",
-    promesa: "Escribe aquí tu promesa, tu dedicatoria o la invitación a un plan juntos.",
-    firma: "Siempre tuyo"
+  "final": {
+    "titulo": "Te amo",
+    "texto": "Esta es tu sorpresa final.",
+    "promesa": "Se que aun falta bastante para poder cumlir mis promesas, sin embargo solo te pido tiempo para que podamos realizar todos los planes que tenemos juntos, sin importa que tanto tiempo pase, permiteme ser yo el que ponga el anillo en tu mano para jurar nuestro amor eterno.",
+    "firma": "Siempre tuyo"
   },
-  // Imágenes de fondo opcionales (ruta o vacío). Se muestran atenuadas detrás del texto.
-  fondos: { puerta: "", voto: "", final: "" },
-  musicaArchivo: "audio/victors_piano_solo.mp3"   // ruta a un mp3, o vacío para la cajita de música generada
+  "fondos": {
+    "puerta": "img/fondo-puerta.jpg",
+    "voto": "img/fondo-voto.jpg",
+    "final": "img/fondo-final.jpg"
+  },
+  "musicaArchivo": "audio/victors_piano_solo.mp3"
 };
 /* ============ FIN DE LA ZONA EDITABLE ============ */
 
@@ -299,7 +342,7 @@ const $ = (id) => document.getElementById(id);
 const STORE = "cuento-aniversario-v3";
 const clone = (o) => JSON.parse(JSON.stringify(o));
 let C = clone(CONFIG);
-try {
+if (EDITOR) try {
   // Recupera lo guardado por el editor (también de la versión anterior) y cambia "aniversario" por "mes".
   const s = localStorage.getItem(STORE) || localStorage.getItem("cuento-aniversario-v2");
   if (s) C = Object.assign(C, JSON.parse(s.replace(/Feliz aniversario/g, "Feliz mes")));
