@@ -245,9 +245,9 @@ const EDITOR = true;
 const CONFIG = {
   ella: "mi amor",                 // cómo le dices cariñosamente
   yo: "Tu nombre o apodo",         // cómo firmas
-  fecha: "24 de octubre",          // fecha del aniversario
+  fecha: "24 de octubre",          // fecha del mes
   portada: {
-    kicker: "Feliz aniversario",
+    kicker: "Feliz mes",
     titulo: "Entre sombras y estrellas",
     subtitulo: "Hay un mundo escondido detrás de esta puerta. Es solo nuestro."
   },
@@ -257,7 +257,7 @@ const CONFIG = {
     "Contigo cada día es una noche de Halloween: llena de sorpresas, de risas que asustan a los fantasmas y de rincones que solo nosotros conocemos.",
     "Escribe aquí lo que solo tú puedes decirle: cómo la conociste, qué te hace reír de ella, qué lugar ocupa en tu mundo.",
     "No necesito una Navidad robada ni un reino de huesos. Me basta tu mano en la mía, bajo esta luna de espirales.",
-    "Feliz aniversario. Gracias por quedarte en mi pueblo."
+    "Feliz mes. Gracias por quedarte en mi pueblo."
   ],
   // Cada recuerdo es una lápida. "img" acepta la ruta de una imagen junto al archivo (img/foto1.jpg)
   // o puedes subirla desde el editor.
@@ -299,7 +299,11 @@ const $ = (id) => document.getElementById(id);
 const STORE = "cuento-aniversario-v3";
 const clone = (o) => JSON.parse(JSON.stringify(o));
 let C = clone(CONFIG);
-try { const s = localStorage.getItem(STORE); if (s) C = Object.assign(C, JSON.parse(s)); } catch (e) {}
+try {
+  // Recupera lo guardado por el editor (también de la versión anterior) y cambia "aniversario" por "mes".
+  const s = localStorage.getItem(STORE) || localStorage.getItem("cuento-aniversario-v2");
+  if (s) C = Object.assign(C, JSON.parse(s.replace(/Feliz aniversario/g, "Feliz mes")));
+} catch (e) {}
 function saveCfg() { try { localStorage.setItem(STORE, JSON.stringify(C)); return true; } catch (e) { return false; } }
 
 function bg(id, url) { if (url) $(id).style.backgroundImage = `url("${url}")`; }
@@ -477,7 +481,7 @@ function openEditor() {
   const h = (t) => { const e = document.createElement("h2"); e.textContent = t; return e; };
   box.append(h("Editar el regalo"));
   box.append(field("Cómo le dices", C.ella, (v) => C.ella = v), field("Tu nombre o apodo", C.yo, (v) => C.yo = v), field("Fecha", C.fecha, (v) => C.fecha = v));
-  box.append(field("Título de portada", C.portada.titulo, (v) => C.portada.titulo = v), field("Subtítulo de portada", C.portada.subtitulo, (v) => C.portada.subtitulo = v, true));
+  box.append(field("Saludo de portada", C.portada.kicker, (v) => C.portada.kicker = v), field("Título de portada", C.portada.titulo, (v) => C.portada.titulo = v), field("Subtítulo de portada", C.portada.subtitulo, (v) => C.portada.subtitulo = v, true));
   box.append(field("Carta (un párrafo por línea)", C.carta.join("\n"), (v) => C.carta = v.split("\n").filter(Boolean), true));
   box.append(h("Recuerdos"));
   C.recuerdos.forEach((r, i) => {
