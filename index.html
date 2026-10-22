@@ -1,0 +1,391 @@
+<title>Entre sombras y estrellas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Pirata+One&display=swap">
+<style>
+/* Layout: escenas a pantalla completa apiladas, una visible a la vez; cuento oscuro, luna arriba, colina y casa abajo */
+:root {
+  --night: #0a0918;
+  --night-2: #151330;
+  --moon: #ece6cf;
+  --blue: #6db3ff;
+  --pumpkin: #ff8a2a;
+  --rose: #c9567f;
+  --ink: #d9d4e6;
+  --f-display: "Pirata One", "Times New Roman", serif;
+  --f-body: "IM Fell English", Georgia, serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--night); color: var(--ink);
+  font-family: var(--f-body); font-size: 1.15rem; line-height: 1.6;
+  overflow: hidden;
+}
+#fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.scene {
+  position: fixed; inset: 0; z-index: 1;
+  padding-block: calc(24px + env(safe-area-inset-top, 0px)) calc(24px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem;
+  text-align: center; overflow-y: auto;
+  opacity: 0; visibility: hidden; transition: opacity 1.2s ease, visibility 1.2s;
+}
+.scene.on { opacity: 1; visibility: visible; }
+h1, h2 { font-family: var(--f-display); font-weight: 400; margin: 0; text-wrap: balance; letter-spacing: .02em; }
+h1 { font-size: clamp(2.6rem, 11vw, 5rem); color: var(--moon); text-shadow: 0 0 30px rgba(236,230,207,.35); line-height: 1; }
+h2 { font-size: clamp(1.8rem, 7vw, 2.8rem); color: var(--moon); }
+p { margin: 0; max-width: 34em; }
+.kicker { font-size: .85rem; letter-spacing: .3em; text-transform: uppercase; color: var(--blue); }
+.btn {
+  font: inherit; font-family: var(--f-display); font-size: 1.35rem; letter-spacing: .06em;
+  color: var(--night); background: var(--moon); border: 0; border-radius: 2px;
+  padding: .55em 1.6em; cursor: pointer; box-shadow: 0 0 24px rgba(236,230,207,.35);
+  transition: transform .2s, box-shadow .2s;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(236,230,207,.6); }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.ghost { background: none; color: var(--moon); box-shadow: none; border: 1px solid rgba(236,230,207,.5); }
+
+/* Escena 1: portada */
+.moon {
+  position: absolute; top: calc(6% + env(safe-area-inset-top, 0px)); left: 50%; translate: -50% 0;
+  width: min(62vw, 340px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fffbe8, var(--moon) 55%, #b9b296);
+  box-shadow: 0 0 80px 20px rgba(236,230,207,.25); opacity: .92; z-index: -1;
+  animation: breathe 7s ease-in-out infinite;
+}
+@keyframes breathe { 50% { box-shadow: 0 0 110px 34px rgba(236,230,207,.35); } }
+.hill { position: absolute; bottom: 0; left: 0; width: 100%; height: 38%; z-index: -1; }
+#s-door { justify-content: flex-end; padding-bottom: calc(14vh + env(safe-area-inset-bottom, 0px)); }
+.title-block { display: flex; flex-direction: column; gap: .8rem; align-items: center; }
+
+/* Escena 2: sobre */
+.envelope { position: relative; width: min(84vw, 360px); aspect-ratio: 3/2; cursor: pointer; border: 0; background: none; padding: 0; perspective: 800px; }
+.env-back, .env-front, .env-flap { position: absolute; inset: 0; }
+.env-back { background: #2a2350; border-radius: 4px; box-shadow: 0 20px 50px rgba(0,0,0,.6); }
+.env-front { background: linear-gradient(135deg, #342b66, #231d46); clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%); border-radius: 4px; }
+.env-flap { background: #3d3478; clip-path: polygon(0 0, 100% 0, 50% 58%); transform-origin: top; transition: transform .9s ease, z-index 0s .45s; z-index: 3; }
+.seal {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%; z-index: 4; width: 22%; aspect-ratio: 1;
+  border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e0759a, var(--rose) 60%, #8a2f55);
+  box-shadow: 0 4px 14px rgba(0,0,0,.5); display: grid; place-items: center;
+  animation: pulse 2.2s ease-in-out infinite; transition: opacity .4s;
+}
+@keyframes pulse { 50% { scale: 1.12; } }
+.envelope.open .env-flap { transform: rotateX(180deg); z-index: 1; }
+.envelope.open .seal { opacity: 0; animation: none; pointer-events: none; }
+.paper {
+  position: absolute; left: 6%; right: 6%; bottom: 8%; height: 80%; background: var(--moon); z-index: 2; border-radius: 2px;
+  transition: transform 1s ease .5s;
+}
+.envelope.open .paper { transform: translateY(-62%); }
+.hint { font-size: .95rem; color: var(--blue); opacity: .85; }
+
+/* Escena 3: carta */
+.letter {
+  background: var(--moon); color: #2a2238; width: min(100%, 560px); max-height: 66vh; overflow-y: auto;
+  padding: 1.6rem 1.4rem; text-align: left; border-radius: 3px; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  font-size: 1.12rem;
+}
+.letter p { max-width: none; margin-bottom: 1rem; }
+.letter .to { font-family: var(--f-display); font-size: 1.7rem; margin-bottom: .6rem; }
+.letter .sign { font-family: var(--f-display); font-size: 1.5rem; text-align: right; }
+.caret::after { content: "|"; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Escena 4: cementerio de recuerdos */
+#s-yard { justify-content: flex-start; padding-top: calc(28px + env(safe-area-inset-top, 0px)); }
+.progress { font-size: .95rem; letter-spacing: .15em; color: var(--blue); }
+.stones { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 1rem; width: min(100%, 620px); }
+.stone {
+  font-family: var(--f-display); font-size: 1.6rem; color: var(--moon); background: linear-gradient(#3a3560, #25213f);
+  border: 1px solid rgba(236,230,207,.25); border-radius: 60px 60px 4px 4px; aspect-ratio: 3/4;
+  display: grid; place-items: center; cursor: pointer; transition: transform .25s, box-shadow .25s;
+}
+.stone:hover { transform: translateY(-4px); box-shadow: 0 0 22px rgba(109,179,255,.35); }
+.stone.seen { background: linear-gradient(#2c4a73, #1d2e4d); border-color: var(--blue); }
+.relics { display: flex; gap: 1.4rem; justify-content: center; margin-top: .4rem; }
+.relic { background: none; border: 0; padding: 6px; cursor: pointer; opacity: .35; transition: opacity .3s, transform .3s, filter .3s; }
+.relic svg { width: 46px; height: 46px; display: block; }
+.relic:hover { opacity: .8; transform: scale(1.12); }
+.relic.found { opacity: 1; filter: drop-shadow(0 0 10px currentColor); }
+.relic[data-k="skull"] { color: var(--moon); }
+.relic[data-k="flower"] { color: var(--blue); }
+.relic[data-k="pumpkin"] { color: var(--pumpkin); }
+
+/* Ventana de mensaje */
+.modal { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 20px max(16px, env(safe-area-inset-left, 0px)); background: rgba(5,4,14,.82); }
+.modal[hidden] { display: none; }
+.card { background: var(--night-2); border: 1px solid rgba(109,179,255,.5); border-radius: 4px; padding: 1.6rem 1.4rem; max-width: 460px; width: 100%; text-align: center; display: flex; flex-direction: column; gap: 1rem; align-items: center; box-shadow: 0 0 50px rgba(109,179,255,.2); }
+.card .date { color: var(--blue); font-size: .9rem; letter-spacing: .2em; text-transform: uppercase; }
+
+/* Escena 5: final */
+#s-end h1 { color: var(--pumpkin); text-shadow: 0 0 34px rgba(255,138,42,.5); }
+.promise { font-size: 1.3rem; color: var(--moon); }
+.heart { width: 72px; color: var(--rose); filter: drop-shadow(0 0 16px var(--rose)); animation: pulse 1.8s ease-in-out infinite; }
+
+#music { position: fixed; z-index: 20; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); font-size: .9rem; padding: .3em .9em; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition-duration: .01s !important; } }
+</style>
+
+<canvas id="fx" aria-hidden="true"></canvas>
+<button id="music" class="btn ghost" type="button" aria-pressed="false">Música: apagada</button>
+
+<!-- Escena 1: la puerta -->
+<section class="scene on" id="s-door">
+  <div class="moon"></div>
+  <svg class="hill" viewBox="0 0 400 150" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 150V80Q80 40 200 70T400 60V150Z" fill="#06050f"/>
+    <path d="M300 62l0-26 12-12 12 12v26zM306 36l6-20 6 20z" fill="#0d0b22"/>
+    <g fill="none" stroke="#1b1740" stroke-width="2"><path d="M200 130c-50 0-60-30-20-40s60 20 20 30-30-10-10-12"/></g>
+  </svg>
+  <div class="title-block">
+    <span class="kicker" id="t-kicker"></span>
+    <h1 id="t-title"></h1>
+    <p id="t-sub"></p>
+  </div>
+  <button class="btn" id="go-door" type="button">Cruzar la puerta</button>
+</section>
+
+<!-- Escena 2: el sobre -->
+<section class="scene" id="s-env">
+  <span class="kicker">Algo te espera</span>
+  <button class="envelope" id="envelope" type="button" aria-label="Abrir el sobre">
+    <div class="env-back"></div>
+    <div class="paper"></div>
+    <div class="env-front"></div>
+    <div class="env-flap"></div>
+    <div class="seal"><svg viewBox="0 0 24 24" width="55%" fill="#f6d6e1" aria-hidden="true"><path d="M12 21s-8-5.4-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.600-8 11-8 11z"/></svg></div>
+  </button>
+  <p class="hint" id="env-hint">Toca el sello</p>
+</section>
+
+<!-- Escena 3: la carta -->
+<section class="scene" id="s-letter">
+  <div class="letter" id="letter" tabindex="0"></div>
+  <button class="btn" id="go-yard" type="button" hidden>Seguir el camino</button>
+</section>
+
+<!-- Escena 4: el jardín de recuerdos -->
+<section class="scene" id="s-yard">
+  <span class="kicker">Nuestra historia</span>
+  <h2>El jardín de los recuerdos</h2>
+  <p id="yard-hint"></p>
+  <div class="stones" id="stones"></div>
+  <div class="relics" id="relics" aria-label="Objetos escondidos">
+    <button class="relic" data-k="skull" type="button" aria-label="Una calavera">
+      <svg viewBox="0 0 48 48" fill="currentColor"><path d="M24 4C13 4 6 12 6 22c0 6 3 10 8 12v6h6v-4h2v4h6v-4h2v4h6v-6c5-2 8-6 8-12C44 12 35 4 24 4zM16 24a4 4 0 1 1 0-.1zm16 0a4 4 0 1 1 0-.1zM24 28l-3 5h6z" fill-rule="evenodd" clip-rule="evenodd" transform="translate(0 0)"/></svg>
+    </button>
+    <button class="relic" data-k="flower" type="button" aria-label="Una flor azul">
+      <svg viewBox="0 0 48 48" fill="currentColor"><g transform="translate(24 20)"><ellipse rx="6" ry="12" cy="-8"/><ellipse rx="6" ry="12" cy="-8" transform="rotate(72)"/><ellipse rx="6" ry="12" cy="-8" transform="rotate(144)"/><ellipse rx="6" ry="12" cy="-8" transform="rotate(216)"/><ellipse rx="6" ry="12" cy="-8" transform="rotate(288)"/></g><circle cx="24" cy="20" r="4" fill="#0a0918"/><path d="M23 30h2v16h-2z"/></svg>
+    </button>
+    <button class="relic" data-k="pumpkin" type="button" aria-label="Una calabaza">
+      <svg viewBox="0 0 48 48" fill="currentColor"><path d="M22 6h4l1 6h-6z"/><ellipse cx="24" cy="28" rx="20" ry="16"/><path d="M15 24l5 6h-8zM33 24l5 6h-8zM14 36q10 6 20 0l-3-3-3 2-4-3-4 3-3-2z" fill="#0a0918"/></svg>
+    </button>
+  </div>
+  <p class="progress" id="progress"></p>
+  <button class="btn" id="go-end" type="button" hidden>Abrir el último secreto</button>
+</section>
+
+<!-- Escena 5: final -->
+<section class="scene" id="s-end">
+  <svg class="heart" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-8-5.400-8-11a4.500 4.500 0 0 1 8-2.800A4.500 4.500 0 0 1 20 10c0 5.600-8 11-8 11z"/></svg>
+  <h1 id="end-title"></h1>
+  <p class="promise" id="end-text"></p>
+  <p id="end-promise"></p>
+  <p class="kicker" id="end-sign"></p>
+</section>
+
+<div class="modal" id="modal" hidden>
+  <div class="card" role="dialog" aria-modal="true">
+    <span class="date" id="m-date"></span>
+    <h2 id="m-title"></h2>
+    <p id="m-text"></p>
+    <button class="btn ghost" id="m-close" type="button">Guardar</button>
+  </div>
+</div>
+
+<script>
+/* ============ EDITA AQUÍ ============
+   Todo el contenido del regalo está en este bloque. */
+const CONFIG = {
+  ella: "mi amor",                 // cómo le dices cariñosamente
+  yo: "Tu nombre o apodo",         // cómo firmas
+  fecha: "22 de octubre",          // fecha del aniversario
+  anos: "1 año",                   // tiempo juntos
+  portada: {
+    kicker: "Feliz aniversario",
+    titulo: "Entre sombras y estrellas",
+    subtitulo: "Hay un mundo escondido detrás de esta puerta. Es solo nuestro."
+  },
+  carta: [
+    "Cada historia oscura necesita una luz, y la mía eres tú.",
+    "Escribe aquí lo que de verdad quieres decirle: cómo la conociste, qué sentiste, qué te hace reír de ella.",
+    "Cambia este texto por tus palabras. Se escribirá solo, letra por letra, cuando abra el sobre.",
+    "Gracias por cada día de este tiempo juntos."
+  ],
+  // Cada recuerdo es una lápida en el jardín. Añade o quita los que quieras.
+  recuerdos: [
+    { fecha: "Primer encuentro", titulo: "El día que te vi", texto: "Cuéntale aquí cómo fue ese primer momento." },
+    { fecha: "Primera cita", titulo: "Nuestra primera noche", texto: "Un detalle que solo ustedes dos recuerdan." },
+    { fecha: "Un viaje", titulo: "Ese lugar", texto: "Un recuerdo que les hizo reír hasta llorar." },
+    { fecha: "Una broma", titulo: "Nuestro chiste", texto: "Algo que solo ustedes entienden." },
+    { fecha: "Hoy", titulo: "Todo lo que somos", texto: "Lo que sientes hoy por ella." }
+  ],
+  // Los tres objetos escondidos en el jardín
+  secretos: {
+    skull:   { titulo: "La calavera", texto: "Hasta la eternidad, contigo." },
+    flower:  { titulo: "La flor azul", texto: "Me recuerdas a algo que nunca se marchita." },
+    pumpkin: { titulo: "La calabaza", texto: "Contigo hasta el otoño más frío se siente cálido." }
+  },
+  final: {
+    titulo: "Te amo",
+    texto: "Esta es tu sorpresa final.",
+    promesa: "Escribe aquí tu promesa, tu dedicatoria o la invitación a un plan juntos.",
+    firma: "Siempre tuyo"
+  },
+  // Música: por defecto una cajita de música generada en el navegador (sin archivos).
+  // Si prefieres una canción, pon aquí la ruta de un mp3 junto a este archivo.
+  musicaArchivo: ""
+};
+/* ============ FIN DE LA ZONA EDITABLE ============ */
+
+const $ = (id) => document.getElementById(id);
+const C = CONFIG;
+
+// Textos de portada y final
+$("t-kicker").textContent = C.portada.kicker;
+$("t-title").textContent = C.portada.titulo;
+$("t-sub").textContent = C.portada.subtitulo;
+$("end-title").textContent = C.final.titulo + ", " + C.ella;
+$("end-text").textContent = C.final.texto;
+$("end-promise").textContent = C.final.promesa;
+$("end-sign").textContent = C.final.firma + ", " + C.yo + " · " + C.fecha;
+$("yard-hint").textContent = "Toca cada lápida para leer un recuerdo. Hay tres objetos escondidos en la oscuridad. Encuéntralos.";
+
+// Escenas
+function show(id) {
+  document.querySelectorAll(".scene").forEach((s) => s.classList.toggle("on", s.id === id));
+}
+$("go-door").onclick = () => { show("s-env"); startMusic(); };
+
+// Sobre
+$("envelope").onclick = () => {
+  const env = $("envelope");
+  if (env.classList.contains("open")) return;
+  env.classList.add("open");
+  $("env-hint").textContent = "";
+  setTimeout(() => { show("s-letter"); typeLetter(); }, 2000);
+};
+
+// Carta con efecto de escritura
+let typed = false;
+async function typeLetter() {
+  if (typed) return; typed = true;
+  const box = $("letter");
+  const to = document.createElement("div");
+  to.className = "to"; to.textContent = "Para ti, " + C.ella + ",";
+  box.append(to);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  for (const para of C.carta) {
+    const p = document.createElement("p"); p.classList.add("caret"); box.append(p);
+    for (const ch of para) {
+      p.textContent += ch;
+      if (!reduce) await new Promise((r) => setTimeout(r, 28));
+      box.scrollTop = box.scrollHeight;
+    }
+    p.classList.remove("caret");
+  }
+  const s = document.createElement("div");
+  s.className = "sign"; s.textContent = C.yo; box.append(s);
+  box.scrollTop = box.scrollHeight;
+  $("go-yard").hidden = false;
+}
+$("go-yard").onclick = () => show("s-yard");
+
+// Jardín: lápidas y objetos
+const seenStones = new Set(), foundRelics = new Set();
+const ROMAN = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
+C.recuerdos.forEach((r, i) => {
+  const b = document.createElement("button");
+  b.className = "stone"; b.type = "button"; b.textContent = ROMAN[i] || i + 1;
+  b.setAttribute("aria-label", "Recuerdo: " + r.titulo);
+  b.onclick = () => { seenStones.add(i); b.classList.add("seen"); openModal(r.fecha, r.titulo, r.texto); update(); };
+  $("stones").append(b);
+});
+document.querySelectorAll(".relic").forEach((b) => {
+  b.onclick = () => {
+    const k = b.dataset.k, s = C.secretos[k];
+    foundRelics.add(k); b.classList.add("found");
+    openModal("Secreto escondido", s.titulo, s.texto); update();
+  };
+});
+function update() {
+  $("progress").textContent = `Recuerdos ${seenStones.size}/${C.recuerdos.length} · Secretos ${foundRelics.size}/3`;
+  $("go-end").hidden = !(seenStones.size === C.recuerdos.length && foundRelics.size === 3);
+}
+update();
+$("go-end").onclick = () => { show("s-end"); burst(); };
+
+// Ventana
+function openModal(date, title, text) {
+  $("m-date").textContent = date; $("m-title").textContent = title; $("m-text").textContent = text;
+  $("modal").hidden = false; $("m-close").focus();
+}
+$("m-close").onclick = () => { $("modal").hidden = true; };
+$("modal").onclick = (e) => { if (e.target === $("modal")) $("modal").hidden = true; };
+addEventListener("keydown", (e) => { if (e.key === "Escape") $("modal").hidden = true; });
+
+// Partículas: niebla, luciérnagas azules y chispas
+const cv = $("fx"), cx = cv.getContext("2d");
+let W, H, parts = [], sparks = [];
+function size() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+addEventListener("resize", size); size();
+for (let i = 0; i < 70; i++) parts.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 2 + .5, vx: (Math.random() - .5) * .25, vy: -Math.random() * .3 - .05, p: Math.random() * 6, blue: Math.random() < .6 });
+function burst() { for (let i = 0; i < 90; i++) sparks.push({ x: W / 2, y: H / 2, vx: (Math.random() - .5) * 8, vy: (Math.random() - .5) * 8 - 2, l: 1, c: Math.random() < .5 ? "255,138,42" : "109,179,255" }); }
+function frame(t) {
+  cx.clearRect(0, 0, W, H);
+  for (const p of parts) {
+    p.x += p.vx + Math.sin(t / 2000 + p.p) * .2; p.y += p.vy;
+    if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+    cx.fillStyle = `rgba(${p.blue ? "109,179,255" : "236,230,207"},${.35 + .35 * Math.sin(t / 700 + p.p)})`;
+    cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 7); cx.fill();
+  }
+  sparks = sparks.filter((s) => s.l > 0);
+  for (const s of sparks) {
+    s.x += s.vx; s.y += s.vy; s.vy += .08; s.l -= .008;
+    cx.fillStyle = `rgba(${s.c},${s.l})`; cx.beginPath(); cx.arc(s.x, s.y, 2.5, 0, 7); cx.fill();
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// Música: cajita de música en menor (WebAudio) o archivo mp3 si se indica
+let actx, musicOn = false, timer, audioEl;
+const NOTES = [220, 261.63, 329.63, 440, 329.63, 261.63, 246.94, 293.66, 349.23, 493.88, 349.23, 293.66];
+function tone(f, when) {
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = "triangle"; o.frequency.value = f;
+  g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(.08, when + .02); g.gain.exponentialRampToValueAtTime(.0001, when + 1.2);
+  o.connect(g).connect(actx.destination); o.start(when); o.stop(when + 1.3);
+}
+function setMusic(on) {
+  musicOn = on;
+  $("music").textContent = "Música: " + (on ? "encendida" : "apagada");
+  $("music").setAttribute("aria-pressed", String(on));
+  if (C.musicaArchivo) {
+    audioEl = audioEl || Object.assign(new Audio(C.musicaArchivo), { loop: true });
+    on ? audioEl.play().catch(() => {}) : audioEl.pause();
+    return;
+  }
+  if (on) {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    actx.resume(); let i = 0;
+    timer = setInterval(() => { tone(NOTES[i++ % NOTES.length], actx.currentTime + .05); }, 520);
+  } else clearInterval(timer);
+}
+function startMusic() { if (!musicOn) setMusic(true); }
+$("music").onclick = () => setMusic(!musicOn);
+</script>
