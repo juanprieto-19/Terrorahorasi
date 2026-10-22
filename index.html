@@ -252,10 +252,12 @@ const CONFIG = {
     subtitulo: "Hay un mundo escondido detrás de esta puerta. Es solo nuestro."
   },
   carta: [
-    "Cada historia oscura necesita una luz, y la mía eres tú.",
-    "Escribe aquí lo que de verdad quieres decirle: cómo la conociste, qué sentiste, qué te hace reír de ella.",
-    "Cambia este texto por tus palabras. Se escribirá solo, letra por letra, cuando abra el sobre.",
-    "Gracias por cada día de este tiempo juntos."
+    "Dicen que en Halloween Town nadie sabe lo que es el amor, hasta que alguien lo encuentra por accidente. A mí me pasó contigo.",
+    "Yo era un habitante más de la oscuridad, contento con mis sustos y mis calabazas, hasta que llegaste y encendiste algo que no sabía que me faltaba.",
+    "Contigo cada día es una noche de Halloween: llena de sorpresas, de risas que asustan a los fantasmas y de rincones que solo nosotros conocemos.",
+    "Escribe aquí lo que solo tú puedes decirle: cómo la conociste, qué te hace reír de ella, qué lugar ocupa en tu mundo.",
+    "No necesito una Navidad robada ni un reino de huesos. Me basta tu mano en la mía, bajo esta luna de espirales.",
+    "Feliz aniversario. Gracias por quedarte en mi pueblo."
   ],
   // Cada recuerdo es una lápida. "img" acepta la ruta de una imagen junto al archivo (img/foto1.jpg)
   // o puedes subirla desde el editor.
@@ -276,9 +278,9 @@ const CONFIG = {
   voto: {
     titulo: "Con esta mano…",
     velas: [
+      { nombre: "La mano", linea: "Con esta mano, levantaré tus penas y sostendré tus alegrías." },
       { nombre: "La vela", linea: "Con esta vela, encenderé tu camino cuando todo esté oscuro." },
-      { nombre: "El anillo", linea: "Con este anillo, te pido que camines a mi lado." },
-      { nombre: "La mano", linea: "Con esta mano, levantaré tus penas y sostendré tus alegrías." }
+      { nombre: "El anillo", linea: "Con este anillo, te pido que camines a mi lado." }
     ]
   },
   final: {
@@ -289,12 +291,12 @@ const CONFIG = {
   },
   // Imágenes de fondo opcionales (ruta o vacío). Se muestran atenuadas detrás del texto.
   fondos: { puerta: "", voto: "", final: "" },
-  musicaArchivo: ""   // ruta a un mp3, o vacío para la cajita de música generada
+  musicaArchivo: "audio/victors_piano_solo.mp3"   // ruta a un mp3, o vacío para la cajita de música generada
 };
 /* ============ FIN DE LA ZONA EDITABLE ============ */
 
 const $ = (id) => document.getElementById(id);
-const STORE = "cuento-aniversario-v2";
+const STORE = "cuento-aniversario-v3";
 const clone = (o) => JSON.parse(JSON.stringify(o));
 let C = clone(CONFIG);
 try { const s = localStorage.getItem(STORE); if (s) C = Object.assign(C, JSON.parse(s)); } catch (e) {}
